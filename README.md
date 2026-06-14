@@ -6,7 +6,7 @@ privacy-first, and built to run on a **free local open-source model** for develo
 **Anthropic Claude** in production.
 
 <!-- Replace USERNAME after you create the repo -->
-![CI](https://github.com/USERNAME/ejar-contract-explainer/actions/workflows/ci.yml/badge.svg)
+![CI](https://github.com/Amnajaved02/ejar-contract-explainer/actions/workflows/ci.yml/badge.svg)
 ![License: MIT](https://img.shields.io/badge/license-MIT-green)
 ![Python](https://img.shields.io/badge/python-3.12-blue)
 
