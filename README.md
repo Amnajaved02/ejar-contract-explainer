@@ -1,62 +1,82 @@
-# Ejar Contract Explainer — Week 1 (extraction layer)
+# Ejar Contract Explainer
 
-Upload a Saudi Ejar tenancy contract (PDF or images, multi-page) and get its structured
-data back. Runs a **free local open-source model** for your testing and **Anthropic** in
-production — switch with one env var. Stateless: nothing is written to disk or a database,
-and document content is never logged.
+Turn a Saudi **Ejar** tenancy contract (عقد إيجار) into clear, structured data — the rent,
+the dates, and the terms that actually matter — in seconds. Bilingual (Arabic / English),
+privacy-first, and built to run on a **free local open-source model** for development and
+**Anthropic Claude** in production.
 
-## Layout
-    app/
-      models.py                 # Pydantic schema (extraction + insight layers)
-      prompts.py                # extraction instructions
-      imaging.py                # PDF / images -> page PNGs (PyMuPDF)
-      extractors/
-        base.py                 # VisionExtractor interface
-        ollama_extractor.py     # local, free  (Qwen2.5-VL via Ollama)
-        anthropic_extractor.py  # production    (Claude, tool-forced schema)
-        factory.py              # picks provider from EXTRACTOR_PROVIDER
-      main.py                   # FastAPI: POST /api/extract  (+ serves frontend/)
-    frontend/index.html         # bilingual AR/EN, RTL, upload + result view
+<!-- Replace USERNAME after you create the repo -->
+![CI](https://github.com/USERNAME/ejar-contract-explainer/actions/workflows/ci.yml/badge.svg)
+![License: MIT](https://img.shields.io/badge/license-MIT-green)
+![Python](https://img.shields.io/badge/python-3.12-blue)
 
-## Setup
+> **Why this is hard (and interesting):** formal Saudi government Arabic is exactly where
+> general tools degrade — RTL layout, legal phrasing, and bilingual fields. This project is
+> about the engineering *around* a vision model: a strict extraction schema, a pluggable
+> model backend, and a privacy posture that assumes real personal documents will be uploaded.
+
+## Screenshot
+<!-- Add one: run the app, open it, screenshot, and save to docs/screenshot.png -->
+![screenshot](docs/screenshot.png)
+
+## What it does
+- Reads a contract as **PDF or images**, **multi-page**, via a vision model.
+- Extracts a **validated schema**: parties (PII-stripped), property, financials, the full
+  payment schedule, and key legal terms (duration, auto-renewal notice, late-payment grace,
+  the daily holdover penalty).
+- Renders the result in a clean **bilingual AR/EN, RTL-aware** interface.
+
+## Pluggable model backend
+One interface, two implementations, switchable with a single env var — no code change.
+
+| Provider | When | Cost | Set in `.env` |
+|---|---|---|---|
+| **Ollama** (Qwen2.5-VL) | local development / testing | free | `EXTRACTOR_PROVIDER=ollama` |
+| **Anthropic** (Claude) | production | API usage | `EXTRACTOR_PROVIDER=anthropic` |
+
+    app/extractors/
+      base.py                 # VisionExtractor interface
+      ollama_extractor.py     # local, free
+      anthropic_extractor.py  # production, schema tool-forced
+      factory.py              # picks one from EXTRACTOR_PROVIDER
+
+## Quickstart (free, local)
     python -m venv .venv && source .venv/bin/activate
     pip install -r requirements.txt
-    cp .env.example .env
+    cp .env.example .env                 # EXTRACTOR_PROVIDER=ollama
 
-## Run locally with a FREE open-source model (your testing)
-1. Install Ollama: https://ollama.com  (needs a GPU or a decent amount of RAM)
-2. Pull a vision model good at Arabic documents:
-       ollama pull qwen2.5vl
-3. In .env:  EXTRACTOR_PROVIDER=ollama
-4. Start:
-       uvicorn app.main:app --reload
-   Open http://localhost:8000  ->  upload a (redacted) contract.
+    # install Ollama from https://ollama.com, then:
+    ollama pull qwen2.5vl
 
-Tip: large multi-page contracts can exceed a small local model's context. If extraction
-degrades, lower the page count or render at a lower DPI in imaging.py. The page-by-page
-+ merge strategy is a clean week-2 upgrade.
+    uvicorn app.main:app --reload        # open http://localhost:8000
 
-## Switch to Anthropic for production
-In .env:
+Click **"See a sample"** to view the UI populated without uploading anything.
+
+## Production (Anthropic)
     EXTRACTOR_PROVIDER=anthropic
-    ANTHROPIC_API_KEY=sk-ant-...        # set on the host, never commit
+    ANTHROPIC_API_KEY=sk-ant-...
     ANTHROPIC_MODEL=claude-sonnet-4-6
-No code change — the factory handles it.
 
-## Deploy (free tiers)
-- Backend: Dockerize and deploy to Fly.io / Render / Railway. Set the env vars there.
-  Minimal Dockerfile:
-      FROM python:3.12-slim
-      WORKDIR /srv
-      COPY requirements.txt . && RUN pip install --no-cache-dir -r requirements.txt
-      COPY . .
-      CMD ["uvicorn","app.main:app","--host","0.0.0.0","--port","8080"]
-- Frontend is served by FastAPI, so one service ships both. (You can split it to Vercel later.)
-- For PDPL: when it serves real documents, host in a Saudi/region cloud and confirm the
-  Anthropic data-retention terms before launch.
+## Deploy
+A `Dockerfile` is included. Deploy the container to Fly.io / Render / Railway and set the
+env vars there; FastAPI serves the frontend too, so one service ships both. Use the
+**Anthropic** backend in the cloud (the local model needs a GPU). For real user documents,
+host in a Saudi/region cloud and confirm provider data-retention terms first.
 
-## Privacy posture (already built in)
-- Stateless: no file or extracted PII persisted.
-- Prompt instructs the model to null out names / IDs / emails / phones / addresses.
-- No document content in logs (only provider + latency).
-- Frontend asks the user to redact before upload, and offers a sample to try with no upload.
+## Privacy & safety (by design)
+- **Stateless** — documents are processed in memory; nothing is written to disk or a database.
+- The model is instructed to **null out** names, IDs, emails, phones, and addresses.
+- **No document content in logs** (only provider + latency).
+- The UI asks users to redact before upload and offers a no-upload sample.
+- **Not legal advice.** Output is informational; always verify with official sources.
+
+## Roadmap
+- [x] **v1 — extraction layer** (this release): image/PDF → validated structured data, bilingual UI.
+- [ ] **v2 — insight layer:** plain-language explanations, deadline alerts, the renewal trap & exit-penalty flags, grounded in cited clauses.
+- [ ] **v3 — grounding & eval:** RAG over Saudi rental procedures, plus an accuracy/eval harness comparing open models vs. Claude on real Arabic contracts.
+
+## License
+MIT — see [LICENSE](LICENSE).
+
+---
+*Built in public. Notes and write-ups accompany each phase.*
