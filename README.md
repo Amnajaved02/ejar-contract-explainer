@@ -6,7 +6,7 @@ privacy-first, and built to run on a **free local open-source model** for develo
 **Anthropic Claude** in production.
 
 <!-- Replace USERNAME after you create the repo -->
-![CI](https://github.com/Amnajaved02/ejar-contract-explainer/actions/workflows/ci.yml/badge.svg)
+![CI](https://github.com/AmnaJaved02/ejar-contract-explainer/actions/workflows/ci.yml/badge.svg)
 ![License: MIT](https://img.shields.io/badge/license-MIT-green)
 ![Python](https://img.shields.io/badge/python-3.12-blue)
 
@@ -64,16 +64,21 @@ env vars there; FastAPI serves the frontend too, so one service ships both. Use 
 host in a Saudi/region cloud and confirm provider data-retention terms first.
 
 ## Privacy & safety (by design)
+- **Client-side redaction** — for PDFs, personal data (names, IDs, phones, email, addresses)
+  is blacked out **in the browser** using the PDF's text coordinates, before anything is sent.
+  Detection is label-anchored and uses **no model**, so personal data never leaves the device.
+- **Fail-closed** — scanned PDFs (no text layer) or unrecognized layouts are refused, not sent.
 - **Stateless** — documents are processed in memory; nothing is written to disk or a database.
-- The model is instructed to **null out** names, IDs, emails, phones, and addresses.
+- The model is also instructed to **null out** any identifiers (defense in depth).
 - **No document content in logs** (only provider + latency).
 - The UI asks users to redact before upload and offers a no-upload sample.
 - **Not legal advice.** Output is informational; always verify with official sources.
 
 ## Roadmap
 - [x] **v1 — extraction layer** (this release): image/PDF → validated structured data, bilingual UI.
-- [ ] **v2 — insight layer:** plain-language explanations, deadline alerts, the renewal trap & exit-penalty flags, grounded in cited clauses.
-- [ ] **v3 — grounding & eval:** RAG over Saudi rental procedures, plus an accuracy/eval harness comparing open models vs. Claude on real Arabic contracts.
+- [x] **v2 — client-side redaction:** in-browser, model-free PII removal for PDFs, with preview & fail-closed.
+- [ ] **v3 — insight layer:** plain-language explanations, deadline alerts, the renewal trap & exit-penalty flags, grounded in cited clauses.
+- [ ] **v4 — grounding & eval:** RAG over Saudi rental procedures, plus an accuracy/eval harness comparing open models vs. Claude on real Arabic contracts.
 
 ## License
 MIT — see [LICENSE](LICENSE).

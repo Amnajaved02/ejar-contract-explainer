@@ -7,75 +7,64 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script>if(window.pdfjsLib){pdfjsLib.GlobalWorkerOptions.workerSrc="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";}</script>
 <style>
   :root{
     --ink:#14302a; --teal:#0f6e5c; --teal-deep:#0a4d40; --amber:#a8630f;
     --paper:#f7f4ee; --card:#ffffff; --line:#e6e0d4; --muted:#6c7a74;
     --shadow:0 1px 2px rgba(20,48,42,.04),0 8px 24px rgba(20,48,42,.06);
   }
-  *{box-sizing:border-box}
-  html,body{margin:0}
-  body{
-    background:var(--paper); color:var(--ink);
-    font-family:"IBM Plex Sans Arabic",system-ui,sans-serif;
-    line-height:1.5; -webkit-font-smoothing:antialiased;
-  }
+  *{box-sizing:border-box} html,body{margin:0}
+  body{background:var(--paper);color:var(--ink);font-family:"IBM Plex Sans Arabic",system-ui,sans-serif;line-height:1.5;-webkit-font-smoothing:antialiased}
   .mono{font-family:"IBM Plex Mono",ui-monospace,monospace;font-weight:500;letter-spacing:-.02em}
   .wrap{max-width:860px;margin:0 auto;padding:28px 20px 80px}
-
   header{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:6px}
   .brand{display:flex;align-items:center;gap:12px}
-  .mark{width:34px;height:34px;border-radius:9px;background:var(--teal);
-    display:grid;place-items:center;color:#fff;font-weight:700;flex:0 0 auto}
+  .mark{width:34px;height:34px;border-radius:9px;background:var(--teal);display:grid;place-items:center;color:#fff;font-weight:700;flex:0 0 auto}
   .brand h1{font-size:1.12rem;font-weight:700;margin:0;line-height:1.1}
   .brand p{margin:0;font-size:.8rem;color:var(--muted)}
   .toggle{display:flex;border:1px solid var(--line);border-radius:999px;overflow:hidden;background:#fff}
-  .toggle button{border:0;background:transparent;padding:7px 14px;font:inherit;font-size:.85rem;
-    cursor:pointer;color:var(--muted)}
+  .toggle button{border:0;background:transparent;padding:7px 14px;font:inherit;font-size:.85rem;cursor:pointer;color:var(--muted)}
   .toggle button[aria-pressed="true"]{background:var(--teal);color:#fff}
-
   .lead{margin:18px 0 22px;font-size:1.02rem;color:#33453f;max-width:60ch}
-
-  .uploader{background:var(--card);border:1.5px dashed #c9d6cf;border-radius:16px;
-    padding:30px 24px;text-align:center;box-shadow:var(--shadow);transition:border-color .15s,background .15s}
+  .uploader{background:var(--card);border:1.5px dashed #c9d6cf;border-radius:16px;padding:30px 24px;text-align:center;box-shadow:var(--shadow);transition:border-color .15s,background .15s}
   .uploader.drag{border-color:var(--teal);background:#f3f9f6}
   .uploader h2{margin:0 0 4px;font-size:1.02rem}
   .uploader p{margin:0 0 16px;color:var(--muted);font-size:.9rem}
-  .btn{display:inline-flex;align-items:center;gap:8px;background:var(--teal);color:#fff;border:0;
-    border-radius:10px;padding:11px 18px;font:inherit;font-weight:600;cursor:pointer}
-  .btn:hover{background:var(--teal-deep)}
-  .btn.ghost{background:#fff;color:var(--teal);border:1px solid var(--line)}
-  .btn.ghost:hover{background:#f3f9f6}
+  .btn{display:inline-flex;align-items:center;gap:8px;background:var(--teal);color:#fff;border:0;border-radius:10px;padding:11px 18px;font:inherit;font-weight:600;cursor:pointer}
+  .btn:hover{background:var(--teal-deep)} .btn:disabled{opacity:.5;cursor:default}
+  .btn.ghost{background:#fff;color:var(--teal);border:1px solid var(--line)} .btn.ghost:hover{background:#f3f9f6}
   .row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:4px}
-
-  .privacy{display:flex;gap:9px;align-items:flex-start;margin:14px auto 0;max-width:62ch;
-    font-size:.82rem;color:#6a5a3a;background:#fbf6ea;border:1px solid #efe2c4;border-radius:10px;padding:10px 12px;text-align:start}
+  .privacy{display:flex;gap:9px;align-items:flex-start;margin:14px auto 0;max-width:62ch;font-size:.82rem;color:#2f5a4e;background:#eef6f2;border:1px solid #cfe6dd;border-radius:10px;padding:10px 12px;text-align:start}
   .privacy svg{flex:0 0 auto;margin-top:1px}
-
   #status{margin:22px auto 0;display:none;align-items:center;gap:11px;justify-content:center;color:var(--muted)}
-  .spinner{width:18px;height:18px;border:2.5px solid #d8e3de;border-top-color:var(--teal);
-    border-radius:50%;animation:spin .8s linear infinite}
+  .spinner{width:18px;height:18px;border:2.5px solid #d8e3de;border-top-color:var(--teal);border-radius:50%;animation:spin .8s linear infinite}
   @keyframes spin{to{transform:rotate(360deg)}}
-
+  .alert{display:none;margin:18px 0 0;border-radius:12px;padding:14px 16px;font-size:.9rem;border:1px solid #e6c9a8;background:#fbf2e6;color:#7a4f12}
+  /* preview */
+  #preview{display:none;margin-top:24px}
+  .pv-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+  .pv-head h3{margin:0;font-size:1rem}
+  .pv-note{font-size:.84rem;color:var(--muted)}
+  .pv-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px}
+  .pv-grid img{width:100%;border:1px solid var(--line);border-radius:10px;box-shadow:var(--shadow);background:#fff}
+  .pv-actions{display:flex;gap:10px;margin-top:16px;flex-wrap:wrap}
+  /* result */
   #result{display:none;margin-top:26px}
-  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;
-    box-shadow:var(--shadow);margin-bottom:14px;overflow:hidden}
-  .card > h3{margin:0;font-size:.78rem;letter-spacing:.04em;text-transform:uppercase;
-    color:var(--teal-deep);background:#f1f7f4;padding:11px 16px;border-bottom:1px solid var(--line);font-weight:600}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);margin-bottom:14px;overflow:hidden}
+  .card>h3{margin:0;font-size:.78rem;letter-spacing:.04em;text-transform:uppercase;color:var(--teal-deep);background:#f1f7f4;padding:11px 16px;border-bottom:1px solid var(--line);font-weight:600}
   .grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line)}
   @media(max-width:560px){.grid{grid-template-columns:1fr}}
   .cell{background:#fff;padding:11px 16px}
   .cell .k{font-size:.74rem;color:var(--muted);margin-bottom:2px}
   .cell .v{font-size:.96rem}
   .redacted{color:#b1b1b1;font-style:italic}
-
   table{width:100%;border-collapse:collapse;font-size:.9rem}
   th,td{padding:10px 16px;text-align:start;border-bottom:1px solid var(--line)}
   th{font-size:.74rem;color:var(--muted);font-weight:600;background:#fbfaf7}
   tr:last-child td{border-bottom:0}
-
-  .soon{margin-top:6px;border:1px dashed var(--line);border-radius:14px;padding:16px;
-    background:#fff;color:var(--muted);font-size:.88rem;display:flex;gap:10px;align-items:center}
+  .soon{margin-top:6px;border:1px dashed var(--line);border-radius:14px;padding:16px;background:#fff;color:var(--muted);font-size:.88rem;display:flex;gap:10px;align-items:center}
   .soon b{color:var(--ink)}
   footer{margin-top:30px;text-align:center;color:var(--muted);font-size:.78rem}
 </style>
@@ -85,10 +74,8 @@
   <header>
     <div class="brand">
       <div class="mark">ع</div>
-      <div>
-        <h1 data-i18n="title">Ejar Contract Explainer</h1>
-        <p data-i18n="subtitle">Understand your tenancy contract in seconds</p>
-      </div>
+      <div><h1 data-i18n="title">Ejar Contract Explainer</h1>
+      <p data-i18n="subtitle">Understand your tenancy contract in seconds</p></div>
     </div>
     <div class="toggle" role="group" aria-label="Language">
       <button id="en" aria-pressed="true" onclick="setLang('en')">EN</button>
@@ -96,162 +83,181 @@
     </div>
   </header>
 
-  <p class="lead" data-i18n="lead">Upload your Ejar tenancy contract and get a clear, plain-language
-    breakdown — the rent, the dates, and the terms that actually matter.</p>
+  <p class="lead" data-i18n="lead">Upload your Ejar tenancy contract and get a clear breakdown — the rent, the dates, and the terms that matter.</p>
 
   <div class="uploader" id="drop">
     <h2 data-i18n="dropTitle">Add your contract</h2>
-    <p data-i18n="dropHint">PDF or images — all pages. Processed in memory, never stored.</p>
+    <p data-i18n="dropHint">Digital PDF only. Your personal data is blacked out in your browser before anything is sent.</p>
     <div class="row">
-      <button class="btn" onclick="picker.click()" data-i18n="choose">Choose files</button>
+      <button class="btn" onclick="picker.click()" data-i18n="choose">Choose PDF</button>
       <button class="btn ghost" onclick="loadSample()" data-i18n="sample">See a sample</button>
     </div>
-    <input id="picker" type="file" accept=".pdf,.png,.jpg,.jpeg" multiple hidden onchange="upload(this.files)">
+    <input id="picker" type="file" accept="application/pdf,.pdf" hidden onchange="handleFile(this.files[0])">
     <div class="privacy">
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#a8630f" stroke-width="2"><path d="M12 2 4 6v6c0 5 3.4 8 8 10 4.6-2 8-5 8-10V6z"/></svg>
-      <span data-i18n="privacy">Redact personal details first. Don't upload anyone's real name, ID, or contact info — yours or the landlord's.</span>
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#0f6e5c" stroke-width="2"><path d="M12 2 4 6v6c0 5 3.4 8 8 10 4.6-2 8-5 8-10V6z"/></svg>
+      <span data-i18n="privacy">Names, ID numbers, and contacts are removed on your device. Only the redacted pages — never your personal details — are sent for analysis.</span>
     </div>
   </div>
 
-  <div id="status"><div class="spinner"></div><span data-i18n="working">Reading your contract…</span></div>
+  <div class="alert" id="alert"></div>
+  <div id="status"><div class="spinner"></div><span id="statusText" data-i18n="redacting">Removing personal data on your device…</span></div>
+
+  <!-- preview & confirm before sending -->
+  <div id="preview">
+    <div class="pv-head">
+      <h3 data-i18n="pvTitle">Check the blackout before sending</h3>
+      <span class="pv-note" id="pvNote"></span>
+    </div>
+    <div class="pv-grid" id="pvGrid"></div>
+    <div class="pv-actions">
+      <button class="btn" onclick="confirmSend()" data-i18n="analyze">Looks right — analyze</button>
+      <button class="btn ghost" onclick="resetAll()" data-i18n="cancel">Cancel</button>
+    </div>
+  </div>
 
   <div id="result"></div>
-
-  <footer><span data-i18n="disclaimer">Informational only — not legal advice. Always verify with official sources.</span></footer>
+  <footer><span data-i18n="disclaimer">Informational only — not legal advice. Best-effort redaction; always check the preview.</span></footer>
 </div>
 
+<script src="redaction.js"></script>
 <script>
-const picker = document.getElementById('picker');
-const drop = document.getElementById('drop');
+const picker=document.getElementById('picker'), drop=document.getElementById('drop');
+let redactedBlobs=null;
 
-const T = {
-  en:{title:"Ejar Contract Explainer",subtitle:"Understand your tenancy contract in seconds",
-    lead:"Upload your Ejar tenancy contract and get a clear, plain-language breakdown — the rent, the dates, and the terms that actually matter.",
-    dropTitle:"Add your contract",dropHint:"PDF or images — all pages. Processed in memory, never stored.",
-    choose:"Choose files",sample:"See a sample",
-    privacy:"Redact personal details first. Don't upload anyone's real name, ID, or contact info — yours or the landlord's.",
-    working:"Reading your contract…",disclaimer:"Informational only — not legal advice. Always verify with official sources.",
-    contract:"Contract",property:"Property",financials:"Money",schedule:"Payment schedule",terms:"Key terms",
-    soon:"Plain-language explanations and deadline alerts arrive next.",
-    f:{type:"Type",location:"Sealed in",start:"Starts",end:"Ends",ptype:"Property",usage:"Usage",unit:"Unit",
-       area:"Area",floor:"Floor",units:"Units in building",total:"Total for the year",annual:"Annual rent",
-       per:"Per payment",cycle:"Payment cycle",deposit:"Security deposit",duration:"Duration",renew:"Auto-renews",
-       notice:"Notice to cancel renewal",grace:"Late-payment grace",penalty:"If you don't vacate on time",law:"Governing law"},
-    no:"No.",due:"Due",deadline:"Deadline",amount:"Amount",redacted:"— redacted —",yes:"Yes",none:"None",days:"days",sar:"SAR"},
-  ar:{title:"موضّح عقد إيجار",subtitle:"افهم عقد إيجارك في ثوانٍ",
-    lead:"ارفع عقد الإيجار الخاص بك واحصل على شرح واضح ومبسّط — قيمة الإيجار، التواريخ، والشروط التي تهمّك فعلاً.",
-    dropTitle:"أضف عقدك",dropHint:"ملف PDF أو صور — كل الصفحات. تُعالَج في الذاكرة ولا تُحفَظ.",
-    choose:"اختر الملفات",sample:"شاهد نموذجاً",
-    privacy:"احذف البيانات الشخصية أولاً. لا ترفع اسماً أو هوية أو وسيلة تواصل حقيقية — لك أو للمؤجّر.",
-    working:"جارٍ قراءة عقدك…",disclaimer:"لأغراض إرشادية فقط — ليست استشارة قانونية. تحقّق دائماً من المصادر الرسمية.",
-    contract:"العقد",property:"العقار",financials:"المالية",schedule:"جدول الدفعات",terms:"الشروط الأساسية",
-    soon:"الشروحات المبسّطة وتنبيهات المواعيد قادمة قريباً.",
-    f:{type:"النوع",location:"مكان الإبرام",start:"يبدأ",end:"ينتهي",ptype:"نوع العقار",usage:"الاستخدام",unit:"الوحدة",
-       area:"المساحة",floor:"الطابق",units:"عدد الوحدات",total:"إجمالي السنة",annual:"الإيجار السنوي",
-       per:"قيمة الدفعة",cycle:"دورة السداد",deposit:"مبلغ الضمان",duration:"المدة",renew:"تجديد تلقائي",
-       notice:"مهلة إلغاء التجديد",grace:"مهلة تأخّر السداد",penalty:"عند عدم الإخلاء في الموعد",law:"القانون الحاكم"},
-    no:"#",due:"الاستحقاق",deadline:"آخر موعد",amount:"المبلغ",redacted:"— محجوب —",yes:"نعم",none:"لا يوجد",days:"يوم",sar:"ريال"}
+const T={
+ en:{title:"Ejar Contract Explainer",subtitle:"Understand your tenancy contract in seconds",
+  lead:"Upload your Ejar tenancy contract and get a clear breakdown — the rent, the dates, and the terms that matter.",
+  dropTitle:"Add your contract",dropHint:"Digital PDF only. Your personal data is blacked out in your browser before anything is sent.",
+  choose:"Choose PDF",sample:"See a sample",
+  privacy:"Names, ID numbers, and contacts are removed on your device. Only the redacted pages — never your personal details — are sent for analysis.",
+  redacting:"Removing personal data on your device…",working:"Reading your contract…",
+  pvTitle:"Check the blackout before sending",analyze:"Looks right — analyze",cancel:"Cancel",
+  disclaimer:"Informational only — not legal advice. Best-effort redaction; always check the preview.",
+  err_no_text_layer:"This looks like a scanned PDF (no selectable text), so personal data can't be removed safely on your device. Please upload a digital Ejar PDF.",
+  err_no_labels:"This doesn't look like a standard Ejar PDF — the expected fields weren't found, so it wasn't processed. Nothing was sent.",
+  err_generic:"Something went wrong reading the PDF. Nothing was sent.",
+  pvNote:(p,b)=>`${p} page(s) · ${b} field(s) blacked out`,
+  contract:"Contract",property:"Property",financials:"Money",schedule:"Payment schedule",terms:"Key terms",
+  soon:"Plain-language explanations and deadline alerts arrive next.",
+  f:{type:"Type",location:"Sealed in",start:"Starts",end:"Ends",ptype:"Property",usage:"Usage",unit:"Unit",area:"Area",floor:"Floor",units:"Units in building",total:"Total for the year",annual:"Annual rent",per:"Per payment",cycle:"Payment cycle",deposit:"Security deposit",duration:"Duration",renew:"Auto-renews",notice:"Notice to cancel renewal",grace:"Late-payment grace",penalty:"If you don't vacate on time",law:"Governing law"},
+  no:"No.",due:"Due",deadline:"Deadline",amount:"Amount",redacted:"— redacted —",yes:"Yes",none:"None",days:"days",sar:"SAR"},
+ ar:{title:"موضّح عقد إيجار",subtitle:"افهم عقد إيجارك في ثوانٍ",
+  lead:"ارفع عقد الإيجار واحصل على شرح واضح — قيمة الإيجار، التواريخ، والشروط المهمّة.",
+  dropTitle:"أضف عقدك",dropHint:"ملف PDF رقمي فقط. تُحجب بياناتك الشخصية داخل متصفحك قبل إرسال أي شيء.",
+  choose:"اختر ملف PDF",sample:"شاهد نموذجاً",
+  privacy:"تُزال الأسماء وأرقام الهوية ووسائل التواصل على جهازك. تُرسَل الصفحات المحجوبة فقط — لا بياناتك الشخصية — للتحليل.",
+  redacting:"جارٍ إزالة البيانات الشخصية على جهازك…",working:"جارٍ قراءة عقدك…",
+  pvTitle:"تحقّق من الحجب قبل الإرسال",analyze:"يبدو صحيحاً — حلّل",cancel:"إلغاء",
+  disclaimer:"لأغراض إرشادية فقط — ليست استشارة قانونية. الحجب بأفضل جهد؛ تحقّق دائماً من المعاينة.",
+  err_no_text_layer:"يبدو أن الملف ممسوح ضوئياً (لا يحتوي نصاً قابلاً للتحديد)، لذا لا يمكن إزالة البيانات الشخصية بأمان على جهازك. الرجاء رفع ملف Ejar رقمي.",
+  err_no_labels:"لا يبدو هذا ملف Ejar قياسياً — لم يتم العثور على الحقول المتوقعة، فلم تتم المعالجة. لم يُرسَل أي شيء.",
+  err_generic:"حدث خطأ أثناء قراءة الملف. لم يُرسَل أي شيء.",
+  pvNote:(p,b)=>`${p} صفحة · حُجِب ${b} حقل`,
+  contract:"العقد",property:"العقار",financials:"المالية",schedule:"جدول الدفعات",terms:"الشروط الأساسية",
+  soon:"الشروحات المبسّطة وتنبيهات المواعيد قادمة قريباً.",
+  f:{type:"النوع",location:"مكان الإبرام",start:"يبدأ",end:"ينتهي",ptype:"نوع العقار",usage:"الاستخدام",unit:"الوحدة",area:"المساحة",floor:"الطابق",units:"عدد الوحدات",total:"إجمالي السنة",annual:"الإيجار السنوي",per:"قيمة الدفعة",cycle:"دورة السداد",deposit:"مبلغ الضمان",duration:"المدة",renew:"تجديد تلقائي",notice:"مهلة إلغاء التجديد",grace:"مهلة تأخّر السداد",penalty:"عند عدم الإخلاء في الموعد",law:"القانون الحاكم"},
+  no:"#",due:"الاستحقاق",deadline:"آخر موعد",amount:"المبلغ",redacted:"— محجوب —",yes:"نعم",none:"لا يوجد",days:"يوم",sar:"ريال"}
 };
-let lang='en', lastData=null;
-function setLang(l){
-  lang=l;
-  document.documentElement.lang=l;
-  document.documentElement.dir = l==='ar'?'rtl':'ltr';
-  document.getElementById('en').setAttribute('aria-pressed', l==='en');
-  document.getElementById('ar').setAttribute('aria-pressed', l==='ar');
-  document.querySelectorAll('[data-i18n]').forEach(el=>{el.textContent=T[l][el.dataset.i18n]});
-  if(lastData) render(lastData);
-}
+let lang='en',lastData=null;
+function setLang(l){lang=l;document.documentElement.lang=l;document.documentElement.dir=l==='ar'?'rtl':'ltr';
+ document.getElementById('en').setAttribute('aria-pressed',l==='en');document.getElementById('ar').setAttribute('aria-pressed',l==='ar');
+ document.querySelectorAll('[data-i18n]').forEach(el=>{el.textContent=T[l][el.dataset.i18n]});
+ if(lastData)render(lastData);}
 
 ['dragover','dragenter'].forEach(e=>drop.addEventListener(e,ev=>{ev.preventDefault();drop.classList.add('drag')}));
 ['dragleave','drop'].forEach(e=>drop.addEventListener(e,ev=>{ev.preventDefault();drop.classList.remove('drag')}));
-drop.addEventListener('drop',ev=>upload(ev.dataTransfer.files));
+drop.addEventListener('drop',ev=>{const f=ev.dataTransfer.files[0]; if(f) handleFile(f);});
 
-async function upload(files){
-  if(!files || !files.length) return;
-  showStatus(true);
-  const fd=new FormData();
-  [...files].forEach(f=>fd.append('files', f));
-  try{
-    const r=await fetch('/api/extract',{method:'POST',body:fd});
-    if(!r.ok) throw new Error((await r.json()).detail||'Failed');
-    render(await r.json());
-  }catch(err){ alert(err.message); }
-  finally{ showStatus(false); }
-}
 function showStatus(on){document.getElementById('status').style.display=on?'flex':'none'}
+function showAlert(msg){const a=document.getElementById('alert');a.textContent=msg;a.style.display='block'}
+function clearAlert(){document.getElementById('alert').style.display='none'}
+function resetAll(){redactedBlobs=null;clearAlert();
+ document.getElementById('preview').style.display='none';
+ document.getElementById('pvGrid').innerHTML='';picker.value='';}
 
-const v = x => (x===null||x===undefined||x==='') ? null : x;
-function cell(k,val){ const t=T[lang];
-  const shown = val===null ? `<span class="redacted">${t.redacted}</span>` : val;
-  return `<div class="cell"><div class="k">${k}</div><div class="v">${shown}</div></div>`; }
-function money(n){ return n==null?null:`<span class="mono">${Number(n).toLocaleString()}</span> ${T[lang].sar}`; }
-
-function render(data){
-  lastData=data; const t=T[lang], f=t.f, c=data.extracted, out=[];
-  const P=c.property||{}, M=c.financials||{}, K=c.key_terms||{};
-
-  out.push(`<div class="card"><h3>${t.contract}</h3><div class="grid">
-    ${cell(f.type, v(c.contract_type))}
-    ${cell(f.location, v(c.sealing_location))}
-    ${cell(f.start, v(K.tenancy_start))}
-    ${cell(f.end, v(K.tenancy_end))}</div></div>`);
-
-  out.push(`<div class="card"><h3>${t.property}</h3><div class="grid">
-    ${cell(f.ptype, v(P.property_type))}
-    ${cell(f.usage, v(P.property_usage))}
-    ${cell(f.unit, v(P.unit_number))}
-    ${cell(f.area, P.unit_area_sqm!=null?`<span class="mono">${P.unit_area_sqm}</span> m²`:null)}
-    ${cell(f.floor, v(P.floor_number))}
-    ${cell(f.units, v(P.number_of_units))}</div></div>`);
-
-  out.push(`<div class="card"><h3>${t.financials}</h3><div class="grid">
-    ${cell(f.total, money(M.total_contract_value_sar))}
-    ${cell(f.annual, money(M.annual_rent_sar))}
-    ${cell(f.per, money(M.regular_payment_sar))}
-    ${cell(f.cycle, v(M.payment_cycle))}
-    ${cell(f.deposit, M.security_deposit_sar? money(M.security_deposit_sar): t.none)}</div></div>`);
-
-  if((c.payment_schedule||[]).length){
-    const rows=c.payment_schedule.map(p=>`<tr>
-      <td class="mono">${p.sequence}</td>
-      <td class="mono">${p.due_date_gregorian||'—'}</td>
-      <td class="mono">${p.payment_deadline_gregorian||'—'}</td>
-      <td>${money(p.amount_sar)||'—'}</td></tr>`).join('');
-    out.push(`<div class="card"><h3>${t.schedule}</h3><table>
-      <thead><tr><th>${t.no}</th><th>${t.due}</th><th>${t.deadline}</th><th>${t.amount}</th></tr></thead>
-      <tbody>${rows}</tbody></table></div>`);
-  }
-
-  out.push(`<div class="card"><h3>${t.terms}</h3><div class="grid">
-    ${cell(f.duration, K.contract_duration_days!=null?`<span class="mono">${K.contract_duration_days}</span> ${t.days}`:null)}
-    ${cell(f.renew, K.auto_renews==null?null:(K.auto_renews?t.yes:t.none))}
-    ${cell(f.notice, K.renewal_notice_days!=null?`<span class="mono">${K.renewal_notice_days}</span> ${t.days}`:null)}
-    ${cell(f.grace, K.late_payment_grace_days!=null?`<span class="mono">${K.late_payment_grace_days}</span> ${t.days}`:null)}
-    ${cell(f.penalty, money(K.holdover_daily_penalty_sar))}
-    ${cell(f.law, v(K.governing_law))}</div></div>`);
-
-  out.push(`<div class="soon">✦ <span><b>Next:</b> ${t.soon}</span></div>`);
-
-  const el=document.getElementById('result');
-  el.innerHTML=out.join(''); el.style.display='block';
+// 1) redact in-browser, then show preview (nothing sent yet)
+async function handleFile(file){
+ if(!file) return;
+ resetAll();
+ if(file.type!=='application/pdf' && !file.name.toLowerCase().endsWith('.pdf')){
+   showAlert(T[lang].err_no_text_layer); return; }
+ document.getElementById('statusText').textContent=T[lang].redacting; showStatus(true);
+ try{
+   const {images,stats}=await window.EjarRedactor.redact(file);
+   redactedBlobs=images;
+   const grid=document.getElementById('pvGrid'); grid.innerHTML='';
+   images.forEach(b=>{const img=new Image();img.src=URL.createObjectURL(b);grid.appendChild(img);});
+   document.getElementById('pvNote').textContent=
+     `${stats.pages} page(s) · ${stats.boxesDrawn} region(s) covered · matched: ${stats.matchedLabels.join(', ')||'none'}`;
+   document.getElementById('preview').style.display='block';
+   document.getElementById('preview').scrollIntoView({behavior:'smooth'});
+   if(stats.boxesDrawn===0){ showAlert(lang==='ar'
+     ?'لم يُحجب أي حقل. تحقّق من المعاينة قبل المتابعة.'
+     :'No regions were covered. Check the preview carefully before continuing.'); }
+ }catch(err){
+   const code=(err&&err.code)?('err_'+err.code):'err_generic';
+   showAlert(T[lang][code]||T[lang].err_generic);
+ }finally{ showStatus(false); }
 }
 
-const SAMPLE={extracted:{
-  contract_type:"جديد", sealing_location:"الرياض", sealing_date:"2025-11-17",
-  property:{property_type:"عمارة",property_usage:"سكن عائلات",unit_number:"02",unit_type:"شقة",
-    unit_area_sqm:150.0,floor_number:"0",number_of_units:36,number_of_floors:3},
-  financials:{total_contract_value_sar:39500,annual_rent_sar:39500,regular_payment_sar:19750,
-    payment_cycle:"نصف سنوي",number_of_payments:2,security_deposit_sar:null},
-  payment_schedule:[
-    {sequence:1,due_date_gregorian:"2025-12-19",payment_deadline_gregorian:"2025-12-29",amount_sar:19750},
-    {sequence:2,due_date_gregorian:"2026-06-19",payment_deadline_gregorian:"2026-06-29",amount_sar:19750}],
-  key_terms:{contract_duration_days:364,tenancy_start:"2025-12-19",tenancy_end:"2026-12-18",
-    auto_renews:true,renewal_notice_days:60,late_payment_grace_days:15,holdover_daily_penalty_sar:500,
-    governing_law:"Saudi law"}
-}, insights:[]};
-function loadSample(){ render(SAMPLE); document.getElementById('result').scrollIntoView({behavior:'smooth'}); }
+// 2) only after the user confirms, send the redacted PNGs
+async function confirmSend(){
+ if(!redactedBlobs) return;
+ document.getElementById('preview').style.display='none';
+ document.getElementById('statusText').textContent=T[lang].working; showStatus(true);
+ const fd=new FormData();
+ redactedBlobs.forEach((b,i)=>fd.append('files',b,`page-${i+1}.png`));
+ try{
+   const r=await fetch('/api/extract',{method:'POST',body:fd});
+   if(!r.ok) throw new Error((await r.json()).detail||'Failed');
+   render(await r.json());
+ }catch(err){ showAlert(err.message); }
+ finally{ showStatus(false); resetAll(); }
+}
 
+// ---- result rendering ----
+const v=x=>(x===null||x===undefined||x==='')?null:x;
+function cell(k,val){const t=T[lang];const shown=val===null?`<span class="redacted">${t.redacted}</span>`:val;
+ return `<div class="cell"><div class="k">${k}</div><div class="v">${shown}</div></div>`;}
+function money(n){return n==null?null:`<span class="mono">${Number(n).toLocaleString()}</span> ${T[lang].sar}`;}
+function render(data){
+ lastData=data;const t=T[lang],f=t.f,c=data.extracted,out=[];
+ const P=c.property||{},M=c.financials||{},K=c.key_terms||{};
+ out.push(`<div class="card"><h3>${t.contract}</h3><div class="grid">
+  ${cell(f.type,v(c.contract_type))}${cell(f.location,v(c.sealing_location))}
+  ${cell(f.start,v(K.tenancy_start))}${cell(f.end,v(K.tenancy_end))}</div></div>`);
+ out.push(`<div class="card"><h3>${t.property}</h3><div class="grid">
+  ${cell(f.ptype,v(P.property_type))}${cell(f.usage,v(P.property_usage))}
+  ${cell(f.unit,v(P.unit_number))}${cell(f.area,P.unit_area_sqm!=null?`<span class="mono">${P.unit_area_sqm}</span> m²`:null)}
+  ${cell(f.floor,v(P.floor_number))}${cell(f.units,v(P.number_of_units))}</div></div>`);
+ out.push(`<div class="card"><h3>${t.financials}</h3><div class="grid">
+  ${cell(f.total,money(M.total_contract_value_sar))}${cell(f.annual,money(M.annual_rent_sar))}
+  ${cell(f.per,money(M.regular_payment_sar))}${cell(f.cycle,v(M.payment_cycle))}
+  ${cell(f.deposit,M.security_deposit_sar?money(M.security_deposit_sar):t.none)}</div></div>`);
+ if((c.payment_schedule||[]).length){
+  const rows=c.payment_schedule.map(p=>`<tr><td class="mono">${p.sequence}</td>
+   <td class="mono">${p.due_date_gregorian||'—'}</td><td class="mono">${p.payment_deadline_gregorian||'—'}</td>
+   <td>${money(p.amount_sar)||'—'}</td></tr>`).join('');
+  out.push(`<div class="card"><h3>${t.schedule}</h3><table><thead><tr>
+   <th>${t.no}</th><th>${t.due}</th><th>${t.deadline}</th><th>${t.amount}</th></tr></thead><tbody>${rows}</tbody></table></div>`);}
+ out.push(`<div class="card"><h3>${t.terms}</h3><div class="grid">
+  ${cell(f.duration,K.contract_duration_days!=null?`<span class="mono">${K.contract_duration_days}</span> ${t.days}`:null)}
+  ${cell(f.renew,K.auto_renews==null?null:(K.auto_renews?t.yes:t.none))}
+  ${cell(f.notice,K.renewal_notice_days!=null?`<span class="mono">${K.renewal_notice_days}</span> ${t.days}`:null)}
+  ${cell(f.grace,K.late_payment_grace_days!=null?`<span class="mono">${K.late_payment_grace_days}</span> ${t.days}`:null)}
+  ${cell(f.penalty,money(K.holdover_daily_penalty_sar))}${cell(f.law,v(K.governing_law))}</div></div>`);
+ out.push(`<div class="soon">✦ <span><b>Next:</b> ${t.soon}</span></div>`);
+ const el=document.getElementById('result');el.innerHTML=out.join('');el.style.display='block';
+ el.scrollIntoView({behavior:'smooth'});
+}
+
+const SAMPLE={extracted:{contract_type:"جديد",sealing_location:"الرياض",sealing_date:"2025-11-17",
+ property:{property_type:"عمارة",property_usage:"سكن عائلات",unit_number:"02",unit_type:"شقة",unit_area_sqm:150.0,floor_number:"0",number_of_units:36,number_of_floors:3},
+ financials:{total_contract_value_sar:39500,annual_rent_sar:39500,regular_payment_sar:19750,payment_cycle:"نصف سنوي",number_of_payments:2,security_deposit_sar:null},
+ payment_schedule:[{sequence:1,due_date_gregorian:"2025-12-19",payment_deadline_gregorian:"2025-12-29",amount_sar:19750},
+  {sequence:2,due_date_gregorian:"2026-06-19",payment_deadline_gregorian:"2026-06-29",amount_sar:19750}],
+ key_terms:{contract_duration_days:364,tenancy_start:"2025-12-19",tenancy_end:"2026-12-18",auto_renews:true,renewal_notice_days:60,late_payment_grace_days:15,holdover_daily_penalty_sar:500,governing_law:"Saudi law"}},insights:[]};
+function loadSample(){render(SAMPLE);}
 setLang('en');
 </script>
 </body>

@@ -70,8 +70,8 @@ class PaymentInstallment(BaseModel):
 
 
 class Financials(BaseModel):
-    total_contract_value_sar: Optional[float] = None   # 39500.00
-    annual_rent_sar: Optional[float] = None            # 39500.00
+    total_contract_value_sar: Optional[float] = None   # 19500.00
+    annual_rent_sar: Optional[float] = None            # 19500.00
     regular_payment_sar: Optional[float] = None        # 19750.00
     payment_cycle: Optional[str] = None                # نصف سنوي (semi-annual)
     number_of_payments: Optional[int] = None           # 2
