@@ -4,3 +4,4 @@ python-multipart
 pydantic>=2
 pymupdf
 anthropic
+python-dotenv

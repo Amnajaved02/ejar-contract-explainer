@@ -1,10 +1,13 @@
 import logging
 import os
 import time
+from pathlib import Path
 from typing import List
 
 from dotenv import load_dotenv
-load_dotenv()  # <-- read .env so EXTRACTOR_PROVIDER / keys actually take effect
+# Load .env from the project root (one level above this file), regardless of CWD.
+_DOTENV = Path(__file__).resolve().parent.parent / ".env"
+load_dotenv(_DOTENV)
 
 from fastapi import FastAPI, File, HTTPException, UploadFile
 from fastapi.concurrency import run_in_threadpool
@@ -13,6 +16,7 @@ from fastapi.staticfiles import StaticFiles
 
 from app.extractors.factory import get_extractor
 from app.imaging import file_to_page_images
+from app.insights import derive_insights
 from app.models import ContractAnalysis
 
 logging.basicConfig(level=logging.INFO)
@@ -26,12 +30,15 @@ MAX_BYTES = 25 * 1024 * 1024
 
 @app.on_event("startup")
 async def _startup():
-    log.info("Active extractor provider: %s", os.getenv("EXTRACTOR_PROVIDER", "anthropic"))
+    log.info(".env found at %s: %s", _DOTENV, _DOTENV.exists())
+    log.info("Active extractor provider: %s", os.getenv("EXTRACTOR_PROVIDER", "ollama"))
+    if os.getenv("EXTRACTOR_PROVIDER") == "anthropic":
+        log.info("ANTHROPIC_API_KEY set: %s", bool(os.getenv("ANTHROPIC_API_KEY")))
 
 
 @app.get("/api/health")
 async def health():
-    return {"ok": True, "provider": os.getenv("EXTRACTOR_PROVIDER", "anthropic")}
+    return {"ok": True, "provider": os.getenv("EXTRACTOR_PROVIDER", "ollama")}
 
 
 @app.post("/api/extract")
@@ -58,7 +65,8 @@ async def extract(files: List[UploadFile] = File(...)):
         raise HTTPException(502, "Could not read the contract. Try clearer images.")
 
     log.info("ok via %s in %.1fs over %d page(s)", extractor.name, time.time() - started, len(pages))
-    return JSONResponse(ContractAnalysis(extracted=contract).model_dump(mode="json"))
+    analysis = ContractAnalysis(extracted=contract, insights=derive_insights(contract))
+    return JSONResponse(analysis.model_dump(mode="json"))
 
 
 # Serve the frontend (registered after API routes so /api/* wins).

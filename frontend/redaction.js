@@ -57,7 +57,8 @@
     const pdf = await pdfjsLib.getDocument({ data: await file.arrayBuffer() }).promise;
     const images = [];
     let totalText = 0;
-    const matched = new Set();
+    const matched = new Set();   // PII labels (for redaction)
+    const fields = new Set();    // any recognized field labels (for "is this an Ejar contract?")
     let boxesDrawn = 0;
     const debug = /[?&]debug=1/.test(location.search);
 
@@ -103,6 +104,7 @@
         const its = row.items.slice().sort((a, b) => a.x - b.x);
         const piiHits = findLabels(its, PII_LABELS);
         const stopHits = findLabels(its, STOP_LABELS);
+        for (const s of stopHits) fields.add(s.label);
         for (const hit of piiHits) {
           matched.add(hit.label);
           let stopX = canvas.width;
@@ -122,9 +124,9 @@
       images.push(await new Promise((res) => canvas.toBlob(res, "image/png")));
     }
 
-    if (totalText < 30) throw new RedactionError("no_text_layer");
-    if (matched.size === 0) throw new RedactionError("no_labels");
-    return { images, stats: { pages: pdf.numPages, matchedLabels: [...matched], boxesDrawn } };
+    if (totalText < 30) throw new RedactionError("no_text_layer");   // scanned / no text
+    if (fields.size < 4) throw new RedactionError("not_ejar");       // not a recognizable Ejar contract
+    return { images, stats: { pages: pdf.numPages, matchedLabels: [...matched], fieldsFound: fields.size, boxesDrawn } };
   }
 
   window.EjarRedactor = { redact, RedactionError, PII_LABELS };

@@ -1,122 +1,166 @@
 <!doctype html>
-<html lang="en" dir="ltr">
+<html lang="en">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Ejar Contract Explainer</title>
+<title>Ejar Explainer</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Hanken+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <script>if(window.pdfjsLib){pdfjsLib.GlobalWorkerOptions.workerSrc="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";}</script>
 <style>
   :root{
-    --ink:#14302a; --teal:#0f6e5c; --teal-deep:#0a4d40; --amber:#a8630f;
-    --paper:#f7f4ee; --card:#ffffff; --line:#e6e0d4; --muted:#6c7a74;
-    --shadow:0 1px 2px rgba(20,48,42,.04),0 8px 24px rgba(20,48,42,.06);
+    --bg:#f2f4f3; --ink:#10211c; --teal:#0e6e5b; --teal-deep:#0a4a3e;
+    --amber:#a96309; --red:#b83a2b;
+    --card:#ffffff; --line:#e4e9e7; --line-soft:#eef1ef; --muted:#5f706a; --chip:#e9f2ee;
+    --shadow:0 1px 2px rgba(16,33,28,.04), 0 12px 32px rgba(16,33,28,.07);
+    --r:16px;
+    --space:8px;
   }
-  *{box-sizing:border-box} html,body{margin:0}
-  body{background:var(--paper);color:var(--ink);font-family:"IBM Plex Sans Arabic",system-ui,sans-serif;line-height:1.5;-webkit-font-smoothing:antialiased}
-  .mono{font-family:"IBM Plex Mono",ui-monospace,monospace;font-weight:500;letter-spacing:-.02em}
-  .wrap{max-width:860px;margin:0 auto;padding:28px 20px 80px}
-  header{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:6px}
-  .brand{display:flex;align-items:center;gap:12px}
-  .mark{width:34px;height:34px;border-radius:9px;background:var(--teal);display:grid;place-items:center;color:#fff;font-weight:700;flex:0 0 auto}
-  .brand h1{font-size:1.12rem;font-weight:700;margin:0;line-height:1.1}
-  .brand p{margin:0;font-size:.8rem;color:var(--muted)}
-  .toggle{display:flex;border:1px solid var(--line);border-radius:999px;overflow:hidden;background:#fff}
-  .toggle button{border:0;background:transparent;padding:7px 14px;font:inherit;font-size:.85rem;cursor:pointer;color:var(--muted)}
-  .toggle button[aria-pressed="true"]{background:var(--teal);color:#fff}
-  .lead{margin:18px 0 22px;font-size:1.02rem;color:#33453f;max-width:60ch}
-  .uploader{background:var(--card);border:1.5px dashed #c9d6cf;border-radius:16px;padding:30px 24px;text-align:center;box-shadow:var(--shadow);transition:border-color .15s,background .15s}
-  .uploader.drag{border-color:var(--teal);background:#f3f9f6}
-  .uploader h2{margin:0 0 4px;font-size:1.02rem}
-  .uploader p{margin:0 0 16px;color:var(--muted);font-size:.9rem}
-  .btn{display:inline-flex;align-items:center;gap:8px;background:var(--teal);color:#fff;border:0;border-radius:10px;padding:11px 18px;font:inherit;font-weight:600;cursor:pointer}
-  .btn:hover{background:var(--teal-deep)} .btn:disabled{opacity:.5;cursor:default}
-  .btn.ghost{background:#fff;color:var(--teal);border:1px solid var(--line)} .btn.ghost:hover{background:#f3f9f6}
-  .row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:4px}
-  .privacy{display:flex;gap:9px;align-items:flex-start;margin:14px auto 0;max-width:62ch;font-size:.82rem;color:#2f5a4e;background:#eef6f2;border:1px solid #cfe6dd;border-radius:10px;padding:10px 12px;text-align:start}
-  .privacy svg{flex:0 0 auto;margin-top:1px}
-  #status{margin:22px auto 0;display:none;align-items:center;gap:11px;justify-content:center;color:var(--muted)}
-  .spinner{width:18px;height:18px;border:2.5px solid #d8e3de;border-top-color:var(--teal);border-radius:50%;animation:spin .8s linear infinite}
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{
+    background:var(--bg); color:var(--ink);
+    font-family:"Hanken Grotesk",system-ui,sans-serif; font-size:16px; line-height:1.55;
+    -webkit-font-smoothing:antialiased; letter-spacing:-0.006em;
+  }
+  .mono{font-family:"IBM Plex Mono",ui-monospace,monospace;font-weight:500;letter-spacing:-.03em;font-variant-numeric:tabular-nums}
+  .col{max-width:660px;margin:0 auto;padding:40px 24px 90px}
+
+  /* brand */
+  .brand{display:flex;align-items:center;gap:10px;margin-bottom:40px}
+  .logo{width:34px;height:34px;border-radius:9px;background:var(--teal);color:#fff;
+    display:flex;align-items:center;justify-content:center;font-size:1.2rem;line-height:1;flex:0 0 auto}
+  .logo span{transform:translateY(-1px)}
+  .wordmark{font-family:"Bricolage Grotesque",sans-serif;font-weight:700;font-size:1.02rem;letter-spacing:-0.01em}
+
+  /* hero */
+  .hero{margin-bottom:30px}
+  .eyebrow{font-size:.74rem;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:var(--teal);margin:0 0 14px}
+  h1{font-family:"Bricolage Grotesque",sans-serif;font-weight:700;font-size:2.3rem;line-height:1.06;
+    letter-spacing:-0.025em;margin:0 0 16px;max-width:15ch}
+  .subhead{font-size:1.04rem;line-height:1.55;color:#37463f;margin:0;max-width:46ch}
+
+  /* card base */
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow)}
+
+  /* uploader */
+  .uploader{padding:26px 26px 24px}
+  .uploader h2{font-family:"Bricolage Grotesque",sans-serif;font-weight:600;font-size:1.12rem;margin:0 0 4px;letter-spacing:-0.01em}
+  .uploader .sub{margin:0 0 20px;color:var(--muted);font-size:.92rem;max-width:48ch}
+  .actions{display:flex;gap:10px;flex-wrap:wrap}
+  .btn{display:inline-flex;align-items:center;gap:8px;border:0;border-radius:11px;
+    padding:12px 20px;font:inherit;font-weight:600;font-size:.93rem;cursor:pointer;transition:background .12s,border-color .12s}
+  .btn-primary{background:var(--teal);color:#fff}
+  .btn-primary:hover{background:var(--teal-deep)}
+  .btn-ghost{background:#fff;color:var(--teal);border:1px solid var(--line)}
+  .btn-ghost:hover{border-color:var(--teal);background:var(--chip)}
+  .note{display:flex;gap:10px;align-items:flex-start;margin-top:20px;padding:13px 15px;
+    background:var(--chip);border:1px solid #d5e7e0;border-radius:11px;
+    font-size:.83rem;line-height:1.5;color:#2c5249}
+  .note svg{flex:0 0 auto;margin-top:2px}
+
+  /* status + alert */
+  #status{display:none;align-items:center;gap:11px;margin-top:22px;color:var(--muted);font-size:.92rem}
+  .spinner{width:18px;height:18px;border:2.5px solid #d6e1dc;border-top-color:var(--teal);border-radius:50%;animation:spin .8s linear infinite}
   @keyframes spin{to{transform:rotate(360deg)}}
-  .alert{display:none;margin:18px 0 0;border-radius:12px;padding:14px 16px;font-size:.9rem;border:1px solid #e6c9a8;background:#fbf2e6;color:#7a4f12}
+  .alert{display:none;margin-top:22px;border-radius:12px;padding:15px 17px;font-size:.9rem;line-height:1.5;
+    border:1px solid #ecd7b4;background:#fbf4e8;color:#7a4f12}
+  .alert .at{display:block;font-weight:600;margin-bottom:2px;color:#6a4310}
+
   /* preview */
-  #preview{display:none;margin-top:24px}
-  .pv-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:12px}
-  .pv-head h3{margin:0;font-size:1rem}
-  .pv-note{font-size:.84rem;color:var(--muted)}
+  #preview{display:none;margin-top:30px}
+  .head-row{display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+  .head-row h3{font-family:"Bricolage Grotesque",sans-serif;font-weight:600;font-size:1.18rem;margin:0;letter-spacing:-0.01em}
+  .head-row .meta{font-size:.82rem;color:var(--muted)}
   .pv-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px}
-  .pv-grid img{width:100%;border:1px solid var(--line);border-radius:10px;box-shadow:var(--shadow);background:#fff}
-  .pv-actions{display:flex;gap:10px;margin-top:16px;flex-wrap:wrap}
+  .pv-grid img{width:100%;border:1px solid var(--line);border-radius:10px;box-shadow:var(--shadow);background:#fff;display:block}
+  .pv-actions{display:flex;gap:10px;margin-top:18px;flex-wrap:wrap}
+
   /* result */
-  #result{display:none;margin-top:26px}
-  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);margin-bottom:14px;overflow:hidden}
-  .card>h3{margin:0;font-size:.78rem;letter-spacing:.04em;text-transform:uppercase;color:var(--teal-deep);background:#f1f7f4;padding:11px 16px;border-bottom:1px solid var(--line);font-weight:600}
-  .grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--line)}
-  @media(max-width:560px){.grid{grid-template-columns:1fr}}
-  .cell{background:#fff;padding:11px 16px}
-  .cell .k{font-size:.74rem;color:var(--muted);margin-bottom:2px}
-  .cell .v{font-size:.96rem}
-  .redacted{color:#b1b1b1;font-style:italic}
+  #result{display:none;margin-top:34px}
+  .section-label{font-size:.74rem;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:var(--teal);margin:0 0 14px}
+  .insights{margin-bottom:34px}
+  .insight{position:relative;border:1px solid var(--line);border-radius:12px;background:#fff;
+    padding:15px 17px 15px 19px;margin-bottom:11px;box-shadow:var(--shadow)}
+  .insight::before{content:"";position:absolute;left:0;top:14px;bottom:14px;width:3px;border-radius:3px;background:var(--line)}
+  .insight.warning::before{background:var(--red)}
+  .insight.important::before{background:var(--amber)}
+  .insight.info::before{background:var(--teal)}
+  .insight h4{margin:0 0 4px;font-size:.98rem;font-weight:600}
+  .insight p{margin:0;font-size:.9rem;line-height:1.5;color:#3a4a44}
+  .insight .pills{margin-top:10px;display:flex;gap:7px;flex-wrap:wrap}
+  .pill{font-size:.71rem;font-weight:500;padding:3px 10px;border-radius:999px;background:var(--chip);color:var(--teal-deep)}
+  .pill.deadline{background:#f8ecd9;color:var(--amber)}
+
+  .panel{border:1px solid var(--line);border-radius:var(--r);background:#fff;box-shadow:var(--shadow);margin-bottom:13px;overflow:hidden}
+  .panel>.t{margin:0;font-size:.72rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--teal-deep);
+    background:#f3f8f6;padding:12px 18px;border-bottom:1px solid var(--line-soft)}
+  .grid{display:grid;grid-template-columns:1fr 1fr}
+  @media(max-width:520px){.grid{grid-template-columns:1fr}}
+  .cell{padding:12px 18px;border-top:1px solid var(--line-soft)}
+  .cell:nth-child(odd){border-right:1px solid var(--line-soft)}
+  @media(max-width:520px){.cell:nth-child(odd){border-right:0}}
+  .cell .k{font-size:.74rem;color:var(--muted);margin-bottom:3px}
+  .cell .v{font-size:.95rem}
+  .muted{color:#aeb8b4;font-style:italic}
   table{width:100%;border-collapse:collapse;font-size:.9rem}
-  th,td{padding:10px 16px;text-align:start;border-bottom:1px solid var(--line)}
-  th{font-size:.74rem;color:var(--muted);font-weight:600;background:#fbfaf7}
-  tr:last-child td{border-bottom:0}
-  .soon{margin-top:6px;border:1px dashed var(--line);border-radius:14px;padding:16px;background:#fff;color:var(--muted);font-size:.88rem;display:flex;gap:10px;align-items:center}
-  .soon b{color:var(--ink)}
-  footer{margin-top:30px;text-align:center;color:var(--muted);font-size:.78rem}
+  th,td{padding:11px 18px;text-align:left;border-top:1px solid var(--line-soft)}
+  th{font-size:.72rem;color:var(--muted);font-weight:600;background:#fbfbfa;border-top:0;letter-spacing:.02em}
+
+  footer{margin-top:38px;color:var(--muted);font-size:.79rem;line-height:1.55}
+
+  a:focus-visible,button:focus-visible{outline:2px solid var(--teal);outline-offset:2px}
+  @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
 <body>
-<div class="wrap">
-  <header>
-    <div class="brand">
-      <div class="mark">ع</div>
-      <div><h1 data-i18n="title">Ejar Contract Explainer</h1>
-      <p data-i18n="subtitle">Understand your tenancy contract in seconds</p></div>
-    </div>
-    <div class="toggle" role="group" aria-label="Language">
-      <button id="en" aria-pressed="true" onclick="setLang('en')">EN</button>
-      <button id="ar" aria-pressed="false" onclick="setLang('ar')">ع</button>
-    </div>
-  </header>
+<div class="col">
 
-  <p class="lead" data-i18n="lead">Upload your Ejar tenancy contract and get a clear breakdown — the rent, the dates, and the terms that matter.</p>
+  <div class="brand">
+    <span class="logo"><span>ع</span></span>
+    <span class="wordmark">Ejar Explainer</span>
+  </div>
 
-  <div class="uploader" id="drop">
-    <h2 data-i18n="dropTitle">Add your contract</h2>
-    <p data-i18n="dropHint">Digital PDF only. Your personal data is blacked out in your browser before anything is sent.</p>
-    <div class="row">
-      <button class="btn" onclick="picker.click()" data-i18n="choose">Choose PDF</button>
-      <button class="btn ghost" onclick="loadSample()" data-i18n="sample">See a sample</button>
+  <div class="hero">
+    <p class="eyebrow">Saudi tenancy contracts</p>
+    <h1>Know what your lease actually commits you to.</h1>
+    <p class="subhead">Upload your Ejar contract and get the rent, the key dates, and the deadlines it quietly holds you to — in seconds.</p>
+  </div>
+
+  <div class="card uploader" id="drop">
+    <h2>Start with your contract</h2>
+    <p class="sub">Digital PDF only. Personal details are blacked out in your browser before anything leaves your device.</p>
+    <div class="actions">
+      <button class="btn btn-primary" onclick="picker.click()">Choose PDF</button>
+      <button class="btn btn-ghost" onclick="loadSample()">See a sample</button>
     </div>
     <input id="picker" type="file" accept="application/pdf,.pdf" hidden onchange="handleFile(this.files[0])">
-    <div class="privacy">
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#0f6e5c" stroke-width="2"><path d="M12 2 4 6v6c0 5 3.4 8 8 10 4.6-2 8-5 8-10V6z"/></svg>
-      <span data-i18n="privacy">Names, ID numbers, and contacts are removed on your device. Only the redacted pages — never your personal details — are sent for analysis.</span>
+    <div class="note">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#0e6e5b" stroke-width="2"><path d="M12 2 4 6v6c0 5 3.4 8 8 10 4.6-2 8-5 8-10V6z"/></svg>
+      <span>Names, ID numbers, and contacts are removed on your device. Only the redacted pages — never your personal details — are sent for analysis.</span>
     </div>
   </div>
 
   <div class="alert" id="alert"></div>
-  <div id="status"><div class="spinner"></div><span id="statusText" data-i18n="redacting">Removing personal data on your device…</span></div>
+  <div id="status"><div class="spinner"></div><span id="statusText">Removing personal data on your device…</span></div>
 
-  <!-- preview & confirm before sending -->
   <div id="preview">
-    <div class="pv-head">
-      <h3 data-i18n="pvTitle">Check the blackout before sending</h3>
-      <span class="pv-note" id="pvNote"></span>
+    <div class="head-row">
+      <h3>Check the blackout before sending</h3>
+      <span class="meta" id="pvNote"></span>
     </div>
     <div class="pv-grid" id="pvGrid"></div>
     <div class="pv-actions">
-      <button class="btn" onclick="confirmSend()" data-i18n="analyze">Looks right — analyze</button>
-      <button class="btn ghost" onclick="resetAll()" data-i18n="cancel">Cancel</button>
+      <button class="btn btn-primary" onclick="confirmSend()">Looks right — analyze</button>
+      <button class="btn btn-ghost" onclick="resetAll()">Cancel</button>
     </div>
   </div>
 
   <div id="result"></div>
-  <footer><span data-i18n="disclaimer">Informational only — not legal advice. Best-effort redaction; always check the preview.</span></footer>
+
+  <footer>Informational only — not legal advice. Best-effort redaction; always check the preview before sending.</footer>
 </div>
 
 <script src="redaction.js"></script>
@@ -124,141 +168,124 @@
 const picker=document.getElementById('picker'), drop=document.getElementById('drop');
 let redactedBlobs=null;
 
-const T={
- en:{title:"Ejar Contract Explainer",subtitle:"Understand your tenancy contract in seconds",
-  lead:"Upload your Ejar tenancy contract and get a clear breakdown — the rent, the dates, and the terms that matter.",
-  dropTitle:"Add your contract",dropHint:"Digital PDF only. Your personal data is blacked out in your browser before anything is sent.",
-  choose:"Choose PDF",sample:"See a sample",
-  privacy:"Names, ID numbers, and contacts are removed on your device. Only the redacted pages — never your personal details — are sent for analysis.",
-  redacting:"Removing personal data on your device…",working:"Reading your contract…",
-  pvTitle:"Check the blackout before sending",analyze:"Looks right — analyze",cancel:"Cancel",
-  disclaimer:"Informational only — not legal advice. Best-effort redaction; always check the preview.",
-  err_no_text_layer:"This looks like a scanned PDF (no selectable text), so personal data can't be removed safely on your device. Please upload a digital Ejar PDF.",
-  err_no_labels:"This doesn't look like a standard Ejar PDF — the expected fields weren't found, so it wasn't processed. Nothing was sent.",
-  err_generic:"Something went wrong reading the PDF. Nothing was sent.",
-  pvNote:(p,b)=>`${p} page(s) · ${b} field(s) blacked out`,
-  contract:"Contract",property:"Property",financials:"Money",schedule:"Payment schedule",terms:"Key terms",
-  soon:"Plain-language explanations and deadline alerts arrive next.",
-  f:{type:"Type",location:"Sealed in",start:"Starts",end:"Ends",ptype:"Property",usage:"Usage",unit:"Unit",area:"Area",floor:"Floor",units:"Units in building",total:"Total for the year",annual:"Annual rent",per:"Per payment",cycle:"Payment cycle",deposit:"Security deposit",duration:"Duration",renew:"Auto-renews",notice:"Notice to cancel renewal",grace:"Late-payment grace",penalty:"If you don't vacate on time",law:"Governing law"},
-  no:"No.",due:"Due",deadline:"Deadline",amount:"Amount",redacted:"— redacted —",yes:"Yes",none:"None",days:"days",sar:"SAR"},
- ar:{title:"موضّح عقد إيجار",subtitle:"افهم عقد إيجارك في ثوانٍ",
-  lead:"ارفع عقد الإيجار واحصل على شرح واضح — قيمة الإيجار، التواريخ، والشروط المهمّة.",
-  dropTitle:"أضف عقدك",dropHint:"ملف PDF رقمي فقط. تُحجب بياناتك الشخصية داخل متصفحك قبل إرسال أي شيء.",
-  choose:"اختر ملف PDF",sample:"شاهد نموذجاً",
-  privacy:"تُزال الأسماء وأرقام الهوية ووسائل التواصل على جهازك. تُرسَل الصفحات المحجوبة فقط — لا بياناتك الشخصية — للتحليل.",
-  redacting:"جارٍ إزالة البيانات الشخصية على جهازك…",working:"جارٍ قراءة عقدك…",
-  pvTitle:"تحقّق من الحجب قبل الإرسال",analyze:"يبدو صحيحاً — حلّل",cancel:"إلغاء",
-  disclaimer:"لأغراض إرشادية فقط — ليست استشارة قانونية. الحجب بأفضل جهد؛ تحقّق دائماً من المعاينة.",
-  err_no_text_layer:"يبدو أن الملف ممسوح ضوئياً (لا يحتوي نصاً قابلاً للتحديد)، لذا لا يمكن إزالة البيانات الشخصية بأمان على جهازك. الرجاء رفع ملف Ejar رقمي.",
-  err_no_labels:"لا يبدو هذا ملف Ejar قياسياً — لم يتم العثور على الحقول المتوقعة، فلم تتم المعالجة. لم يُرسَل أي شيء.",
-  err_generic:"حدث خطأ أثناء قراءة الملف. لم يُرسَل أي شيء.",
-  pvNote:(p,b)=>`${p} صفحة · حُجِب ${b} حقل`,
-  contract:"العقد",property:"العقار",financials:"المالية",schedule:"جدول الدفعات",terms:"الشروط الأساسية",
-  soon:"الشروحات المبسّطة وتنبيهات المواعيد قادمة قريباً.",
-  f:{type:"النوع",location:"مكان الإبرام",start:"يبدأ",end:"ينتهي",ptype:"نوع العقار",usage:"الاستخدام",unit:"الوحدة",area:"المساحة",floor:"الطابق",units:"عدد الوحدات",total:"إجمالي السنة",annual:"الإيجار السنوي",per:"قيمة الدفعة",cycle:"دورة السداد",deposit:"مبلغ الضمان",duration:"المدة",renew:"تجديد تلقائي",notice:"مهلة إلغاء التجديد",grace:"مهلة تأخّر السداد",penalty:"عند عدم الإخلاء في الموعد",law:"القانون الحاكم"},
-  no:"#",due:"الاستحقاق",deadline:"آخر موعد",amount:"المبلغ",redacted:"— محجوب —",yes:"نعم",none:"لا يوجد",days:"يوم",sar:"ريال"}
+const ERR={
+  no_text_layer:["Scanned PDF can't be processed",
+    "This looks like a scanned PDF (no selectable text), so we can't read it or remove personal data safely. Upload a digital Ejar PDF — the file you download from the Ejar platform."],
+  not_ejar:["This doesn't look like an Ejar contract",
+    "We couldn't find the fields of an Ejar tenancy contract, so nothing was processed and nothing was sent. Upload your Ejar contract PDF."],
+  not_pdf:["PDF files only","Choose a PDF file — the contract you downloaded from the Ejar platform."],
+  generic:["Couldn't read this PDF","We couldn't read this file. Try the original Ejar PDF."],
+  unreachable:["Couldn't reach the server",
+    "The analysis server didn't respond. If you're running this locally, start it with uvicorn app.main:app and open http://localhost:8000."],
+  server:["Analysis failed","The server couldn't process the contract. Try again."],
 };
-let lang='en',lastData=null;
-function setLang(l){lang=l;document.documentElement.lang=l;document.documentElement.dir=l==='ar'?'rtl':'ltr';
- document.getElementById('en').setAttribute('aria-pressed',l==='en');document.getElementById('ar').setAttribute('aria-pressed',l==='ar');
- document.querySelectorAll('[data-i18n]').forEach(el=>{el.textContent=T[l][el.dataset.i18n]});
- if(lastData)render(lastData);}
+function showAlert(key,custom){const a=document.getElementById('alert');const e=ERR[key]||ERR.generic;
+  a.innerHTML=`<span class="at">${e[0]}</span>${custom||e[1]}`;a.style.display='block';}
+function clearAlert(){document.getElementById('alert').style.display='none';}
+function showStatus(on){document.getElementById('status').style.display=on?'flex':'none';}
+function resetAll(){redactedBlobs=null;document.getElementById('preview').style.display='none';
+  document.getElementById('pvGrid').innerHTML='';picker.value='';}
 
-['dragover','dragenter'].forEach(e=>drop.addEventListener(e,ev=>{ev.preventDefault();drop.classList.add('drag')}));
-['dragleave','drop'].forEach(e=>drop.addEventListener(e,ev=>{ev.preventDefault();drop.classList.remove('drag')}));
+['dragover','dragenter'].forEach(e=>drop.addEventListener(e,ev=>{ev.preventDefault();drop.style.borderColor='var(--teal)';}));
+['dragleave','drop'].forEach(e=>drop.addEventListener(e,ev=>{ev.preventDefault();drop.style.borderColor='';}));
 drop.addEventListener('drop',ev=>{const f=ev.dataTransfer.files[0]; if(f) handleFile(f);});
 
-function showStatus(on){document.getElementById('status').style.display=on?'flex':'none'}
-function showAlert(msg){const a=document.getElementById('alert');a.textContent=msg;a.style.display='block'}
-function clearAlert(){document.getElementById('alert').style.display='none'}
-function resetAll(){redactedBlobs=null;clearAlert();
- document.getElementById('preview').style.display='none';
- document.getElementById('pvGrid').innerHTML='';picker.value='';}
-
-// 1) redact in-browser, then show preview (nothing sent yet)
 async function handleFile(file){
- if(!file) return;
- resetAll();
- if(file.type!=='application/pdf' && !file.name.toLowerCase().endsWith('.pdf')){
-   showAlert(T[lang].err_no_text_layer); return; }
- document.getElementById('statusText').textContent=T[lang].redacting; showStatus(true);
- try{
-   const {images,stats}=await window.EjarRedactor.redact(file);
-   redactedBlobs=images;
-   const grid=document.getElementById('pvGrid'); grid.innerHTML='';
-   images.forEach(b=>{const img=new Image();img.src=URL.createObjectURL(b);grid.appendChild(img);});
-   document.getElementById('pvNote').textContent=
-     `${stats.pages} page(s) · ${stats.boxesDrawn} region(s) covered · matched: ${stats.matchedLabels.join(', ')||'none'}`;
-   document.getElementById('preview').style.display='block';
-   document.getElementById('preview').scrollIntoView({behavior:'smooth'});
-   if(stats.boxesDrawn===0){ showAlert(lang==='ar'
-     ?'لم يُحجب أي حقل. تحقّق من المعاينة قبل المتابعة.'
-     :'No regions were covered. Check the preview carefully before continuing.'); }
- }catch(err){
-   const code=(err&&err.code)?('err_'+err.code):'err_generic';
-   showAlert(T[lang][code]||T[lang].err_generic);
- }finally{ showStatus(false); }
+  if(!file) return;
+  resetAll(); clearAlert();
+  if(file.type!=='application/pdf' && !file.name.toLowerCase().endsWith('.pdf')){ showAlert('not_pdf'); return; }
+  document.getElementById('statusText').textContent='Removing personal data on your device…'; showStatus(true);
+  try{
+    const {images,stats}=await window.EjarRedactor.redact(file);
+    redactedBlobs=images;
+    const grid=document.getElementById('pvGrid'); grid.innerHTML='';
+    images.forEach(b=>{const img=new Image();img.src=URL.createObjectURL(b);grid.appendChild(img);});
+    document.getElementById('pvNote').textContent=`${stats.pages} page(s) · ${stats.boxesDrawn} region(s) covered`;
+    document.getElementById('preview').style.display='block';
+    document.getElementById('preview').scrollIntoView({behavior:'smooth'});
+    if(stats.boxesDrawn===0) showAlert('generic','No regions were blacked out. Check the preview carefully before continuing.');
+  }catch(err){ showAlert((err&&err.code)?err.code:'generic'); }
+  finally{ showStatus(false); }
 }
 
-// 2) only after the user confirms, send the redacted PNGs
 async function confirmSend(){
- if(!redactedBlobs) return;
- document.getElementById('preview').style.display='none';
- document.getElementById('statusText').textContent=T[lang].working; showStatus(true);
- const fd=new FormData();
- redactedBlobs.forEach((b,i)=>fd.append('files',b,`page-${i+1}.png`));
- try{
-   const r=await fetch('/api/extract',{method:'POST',body:fd});
-   if(!r.ok) throw new Error((await r.json()).detail||'Failed');
-   render(await r.json());
- }catch(err){ showAlert(err.message); }
- finally{ showStatus(false); resetAll(); }
+  if(!redactedBlobs) return;
+  clearAlert(); document.getElementById('preview').style.display='none';
+  document.getElementById('statusText').textContent='Reading your contract…'; showStatus(true);
+  const fd=new FormData();
+  redactedBlobs.forEach((b,i)=>fd.append('files',b,`page-${i+1}.png`));
+  try{
+    const r=await fetch('/api/extract',{method:'POST',body:fd});
+    if(!r.ok) throw new Error('server');
+    render(await r.json()); resetAll();
+  }catch(err){
+    document.getElementById('preview').style.display='block';
+    showAlert(/fetch|networkerror|load failed/i.test(err.message||'')?'unreachable':'server');
+  }finally{ showStatus(false); }
 }
 
-// ---- result rendering ----
 const v=x=>(x===null||x===undefined||x==='')?null:x;
-function cell(k,val){const t=T[lang];const shown=val===null?`<span class="redacted">${t.redacted}</span>`:val;
- return `<div class="cell"><div class="k">${k}</div><div class="v">${shown}</div></div>`;}
-function money(n){return n==null?null:`<span class="mono">${Number(n).toLocaleString()}</span> ${T[lang].sar}`;}
+function cell(k,val){const s=val===null?`<span class="muted">— redacted —</span>`:val;
+  return `<div class="cell"><div class="k">${k}</div><div class="v">${s}</div></div>`;}
+function money(n){return n==null?null:`<span class="mono">${Number(n).toLocaleString()}</span> SAR`;}
+
 function render(data){
- lastData=data;const t=T[lang],f=t.f,c=data.extracted,out=[];
- const P=c.property||{},M=c.financials||{},K=c.key_terms||{};
- out.push(`<div class="card"><h3>${t.contract}</h3><div class="grid">
-  ${cell(f.type,v(c.contract_type))}${cell(f.location,v(c.sealing_location))}
-  ${cell(f.start,v(K.tenancy_start))}${cell(f.end,v(K.tenancy_end))}</div></div>`);
- out.push(`<div class="card"><h3>${t.property}</h3><div class="grid">
-  ${cell(f.ptype,v(P.property_type))}${cell(f.usage,v(P.property_usage))}
-  ${cell(f.unit,v(P.unit_number))}${cell(f.area,P.unit_area_sqm!=null?`<span class="mono">${P.unit_area_sqm}</span> m²`:null)}
-  ${cell(f.floor,v(P.floor_number))}${cell(f.units,v(P.number_of_units))}</div></div>`);
- out.push(`<div class="card"><h3>${t.financials}</h3><div class="grid">
-  ${cell(f.total,money(M.total_contract_value_sar))}${cell(f.annual,money(M.annual_rent_sar))}
-  ${cell(f.per,money(M.regular_payment_sar))}${cell(f.cycle,v(M.payment_cycle))}
-  ${cell(f.deposit,M.security_deposit_sar?money(M.security_deposit_sar):t.none)}</div></div>`);
- if((c.payment_schedule||[]).length){
-  const rows=c.payment_schedule.map(p=>`<tr><td class="mono">${p.sequence}</td>
-   <td class="mono">${p.due_date_gregorian||'—'}</td><td class="mono">${p.payment_deadline_gregorian||'—'}</td>
-   <td>${money(p.amount_sar)||'—'}</td></tr>`).join('');
-  out.push(`<div class="card"><h3>${t.schedule}</h3><table><thead><tr>
-   <th>${t.no}</th><th>${t.due}</th><th>${t.deadline}</th><th>${t.amount}</th></tr></thead><tbody>${rows}</tbody></table></div>`);}
- out.push(`<div class="card"><h3>${t.terms}</h3><div class="grid">
-  ${cell(f.duration,K.contract_duration_days!=null?`<span class="mono">${K.contract_duration_days}</span> ${t.days}`:null)}
-  ${cell(f.renew,K.auto_renews==null?null:(K.auto_renews?t.yes:t.none))}
-  ${cell(f.notice,K.renewal_notice_days!=null?`<span class="mono">${K.renewal_notice_days}</span> ${t.days}`:null)}
-  ${cell(f.grace,K.late_payment_grace_days!=null?`<span class="mono">${K.late_payment_grace_days}</span> ${t.days}`:null)}
-  ${cell(f.penalty,money(K.holdover_daily_penalty_sar))}${cell(f.law,v(K.governing_law))}</div></div>`);
- out.push(`<div class="soon">✦ <span><b>Next:</b> ${t.soon}</span></div>`);
- const el=document.getElementById('result');el.innerHTML=out.join('');el.style.display='block';
- el.scrollIntoView({behavior:'smooth'});
+  const c=data.extracted,out=[];
+  const P=c.property||{},M=c.financials||{},K=c.key_terms||{};
+
+  if((data.insights||[]).length){
+    const items=data.insights.map(i=>{
+      const dl=i.action_deadline?`<span class="pill deadline">by ${i.action_deadline}</span>`:'';
+      const cl=i.source_clause?`<span class="pill">${i.source_clause}</span>`:'';
+      return `<div class="insight ${i.severity}"><h4>${i.title}</h4><p>${i.detail}</p><div class="pills">${dl}${cl}</div></div>`;
+    }).join('');
+    out.push(`<div class="insights"><p class="section-label">What to know</p>${items}</div>`);
+  }
+
+  out.push(`<p class="section-label">The details</p>`);
+  out.push(`<div class="panel"><p class="t">Contract</p><div class="grid">
+    ${cell("Type",v(c.contract_type))}${cell("Sealed in",v(c.sealing_location))}
+    ${cell("Starts",v(K.tenancy_start))}${cell("Ends",v(K.tenancy_end))}</div></div>`);
+  out.push(`<div class="panel"><p class="t">Property</p><div class="grid">
+    ${cell("Property",v(P.property_type))}${cell("Usage",v(P.property_usage))}
+    ${cell("Unit",v(P.unit_number))}${cell("Area",P.unit_area_sqm!=null?`<span class="mono">${P.unit_area_sqm}</span> m²`:null)}
+    ${cell("Floor",v(P.floor_number))}${cell("Units in building",v(P.number_of_units))}</div></div>`);
+  out.push(`<div class="panel"><p class="t">Money</p><div class="grid">
+    ${cell("Total for the period",money(M.total_contract_value_sar))}${cell("Annual rent",money(M.annual_rent_sar))}
+    ${cell("Per payment",money(M.regular_payment_sar))}${cell("Payment cycle",v(M.payment_cycle))}
+    ${cell("Security deposit",M.security_deposit_sar?money(M.security_deposit_sar):"None")}</div></div>`);
+  if((c.payment_schedule||[]).length){
+    const rows=c.payment_schedule.map(p=>`<tr><td class="mono">${p.sequence}</td>
+      <td class="mono">${p.due_date_gregorian||'—'}</td><td class="mono">${p.payment_deadline_gregorian||'—'}</td>
+      <td>${money(p.amount_sar)||'—'}</td></tr>`).join('');
+    out.push(`<div class="panel"><p class="t">Payment schedule</p><table>
+      <thead><tr><th>No.</th><th>Due</th><th>Deadline</th><th>Amount</th></tr></thead><tbody>${rows}</tbody></table></div>`);
+  }
+  out.push(`<div class="panel"><p class="t">Key terms</p><div class="grid">
+    ${cell("Duration",K.contract_duration_days!=null?`<span class="mono">${K.contract_duration_days}</span> days`:null)}
+    ${cell("Auto-renews",K.auto_renews==null?null:(K.auto_renews?"Yes":"No"))}
+    ${cell("Notice to cancel renewal",K.renewal_notice_days!=null?`<span class="mono">${K.renewal_notice_days}</span> days`:null)}
+    ${cell("Late-payment grace",K.late_payment_grace_days!=null?`<span class="mono">${K.late_payment_grace_days}</span> days`:null)}
+    ${cell("If you don't vacate on time",money(K.holdover_daily_penalty_sar))}
+    ${cell("Governing law",v(K.governing_law))}</div></div>`);
+
+  const el=document.getElementById('result');el.innerHTML=out.join('');el.style.display='block';
+  el.scrollIntoView({behavior:'smooth'});
 }
 
-const SAMPLE={extracted:{contract_type:"جديد",sealing_location:"الرياض",sealing_date:"2025-11-17",
- property:{property_type:"عمارة",property_usage:"سكن عائلات",unit_number:"02",unit_type:"شقة",unit_area_sqm:150.0,floor_number:"0",number_of_units:36,number_of_floors:3},
- financials:{total_contract_value_sar:39500,annual_rent_sar:39500,regular_payment_sar:19750,payment_cycle:"نصف سنوي",number_of_payments:2,security_deposit_sar:null},
- payment_schedule:[{sequence:1,due_date_gregorian:"2025-12-19",payment_deadline_gregorian:"2025-12-29",amount_sar:19750},
-  {sequence:2,due_date_gregorian:"2026-06-19",payment_deadline_gregorian:"2026-06-29",amount_sar:19750}],
- key_terms:{contract_duration_days:364,tenancy_start:"2025-12-19",tenancy_end:"2026-12-18",auto_renews:true,renewal_notice_days:60,late_payment_grace_days:15,holdover_daily_penalty_sar:500,governing_law:"Saudi law"}},insights:[]};
-function loadSample(){render(SAMPLE);}
-setLang('en');
+const SAMPLE={extracted:{contract_type:"New",sealing_location:"Riyadh",sealing_date:"2025-11-17",
+  property:{property_type:"Building",property_usage:"Family residence",unit_number:"02",unit_type:"Apartment",unit_area_sqm:150.0,floor_number:"0",number_of_units:36,number_of_floors:3},
+  financials:{total_contract_value_sar:39500,annual_rent_sar:39500,regular_payment_sar:19750,payment_cycle:"Semi-annual",number_of_payments:2,security_deposit_sar:null},
+  payment_schedule:[{sequence:1,due_date_gregorian:"2025-12-19",payment_deadline_gregorian:"2025-12-29",amount_sar:19750},
+   {sequence:2,due_date_gregorian:"2026-06-19",payment_deadline_gregorian:"2026-06-29",amount_sar:19750}],
+  key_terms:{contract_duration_days:364,tenancy_start:"2025-12-19",tenancy_end:"2026-12-18",auto_renews:true,renewal_notice_days:60,late_payment_grace_days:15,holdover_daily_penalty_sar:500,governing_law:"Saudi law"}},
+  insights:[
+   {code:"RENEWAL_NOTICE",severity:"warning",title:"This contract renews itself automatically",detail:"To stop it renewing, you must give notice by 2026-10-19 — 60 days before it ends on 2026-12-18. Miss that date and you're locked into another term.",action_deadline:"2026-10-19",source_clause:"Article 3"},
+   {code:"EXIT_PENALTY",severity:"warning",title:"Daily penalty if you don't move out on time",detail:"If you stay past the end date without agreement, you'll be charged SAR 500 for every day.",action_deadline:null,source_clause:"Article 12"},
+   {code:"LATE_PAYMENT",severity:"important",title:"Pay on time or risk losing the lease",detail:"If a rent payment is more than 15 days late, the landlord may terminate the contract.",action_deadline:null,source_clause:"Article 10"},
+   {code:"TOTAL_COST",severity:"info",title:"Total cost for the contract",detail:"Your total rent for the period is SAR 39,500, paid in 2 installments.",action_deadline:null,source_clause:"Article 4"}
+  ]};
+function loadSample(){clearAlert();render(SAMPLE);}
 </script>
 </body>
 </html>

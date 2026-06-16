@@ -70,8 +70,8 @@ class PaymentInstallment(BaseModel):
 
 
 class Financials(BaseModel):
-    total_contract_value_sar: Optional[float] = None   # 19500.00
-    annual_rent_sar: Optional[float] = None            # 19500.00
+    total_contract_value_sar: Optional[float] = None   # 39500.00
+    annual_rent_sar: Optional[float] = None            # 39500.00
     regular_payment_sar: Optional[float] = None        # 19750.00
     payment_cycle: Optional[str] = None                # نصف سنوي (semi-annual)
     number_of_payments: Optional[int] = None           # 2
@@ -135,10 +135,8 @@ class Severity(str, Enum):
 class DerivedInsight(BaseModel):
     code: str                                   # RENEWAL_NOTICE | EXIT_PENALTY | TOTAL_COST | PAYMENT_DUE ...
     severity: Severity
-    title_ar: str
-    title_en: str
-    detail_ar: str
-    detail_en: str
+    title: str
+    detail: str
     action_deadline: Optional[date] = None      # when the user must act, if any
     source_clause: Optional[str] = None         # grounding ref, e.g. "Article 3/3" — never invented
 
@@ -147,5 +145,3 @@ class ContractAnalysis(BaseModel):
     """The full result returned to the UI."""
     extracted: EjarContract
     insights: list[DerivedInsight] = Field(default_factory=list)
-    summary_ar: str = ""
-    summary_en: str = ""
