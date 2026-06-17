@@ -26,6 +26,41 @@ app = FastAPI(title="Ejar Contract Explainer")
 
 MAX_PAGES = 12
 MAX_BYTES = 25 * 1024 * 1024
+# Cap pages sent to the model. Ejar data lives in the first few pages; later
+# pages are boilerplate obligations the extractor doesn't use. Bounds latency/cost.
+MAX_EXTRACT_PAGES = int(os.getenv("MAX_EXTRACT_PAGES", "5"))
+
+# Safety net: map known Arabic field values to English (the model is also asked to
+# output English, but this guarantees the common standard-template values).
+AR_EN = {
+    "جديد": "New", "تجديد": "Renewal",
+    "الرياض": "Riyadh", "جدة": "Jeddah", "جده": "Jeddah", "الدمام": "Dammam",
+    "مكة": "Mecca", "مكة المكرمة": "Mecca", "المدينة": "Medina", "المدينة المنورة": "Medina",
+    "الخبر": "Khobar", "الطائف": "Taif", "تبوك": "Tabuk", "أبها": "Abha",
+    "عمارة": "Apartment building", "شقة": "Apartment", "فيلا": "Villa",
+    "دور": "Floor unit", "استوديو": "Studio", "أرض": "Land", "محل": "Shop",
+    "سكن عائلات": "Family residence", "سكن عزاب": "Bachelor housing",
+    "سكني": "Residential", "تجاري": "Commercial", "سكن عائلي": "Family residence",
+    "نصف سنوي": "Semi-annual", "سنوي": "Annual", "ربع سنوي": "Quarterly", "شهري": "Monthly",
+    "هوية وطنية": "National ID", "هوية مقيم": "Resident ID (Iqama)",
+    "صك ملكية ورقي": "Paper title deed", "صك إلكتروني": "Electronic title deed",
+}
+
+
+def _en(v):
+    return AR_EN.get(v.strip(), v) if isinstance(v, str) else v
+
+
+def normalize_to_english(c) -> None:
+    """Map known Arabic values on the extracted contract to English, in place."""
+    c.contract_type = _en(c.contract_type)
+    c.sealing_location = _en(c.sealing_location)
+    if c.property:
+        c.property.property_type = _en(c.property.property_type)
+        c.property.property_usage = _en(c.property.property_usage)
+        c.property.unit_type = _en(c.property.unit_type)
+    if c.financials:
+        c.financials.payment_cycle = _en(c.financials.payment_cycle)
 
 
 @app.on_event("startup")
@@ -55,16 +90,19 @@ async def extract(files: List[UploadFile] = File(...)):
         raise HTTPException(413, f"Too many pages (max {MAX_PAGES}).")
 
     extractor = get_extractor()
+    sent = pages[:MAX_EXTRACT_PAGES]
     started = time.time()
     try:
         # Run the (blocking) model call in a worker thread so it never freezes
         # the server's event loop.
-        contract = await run_in_threadpool(extractor.extract, pages)
+        contract = await run_in_threadpool(extractor.extract, sent)
     except Exception as e:
         log.error("extraction failed via %s: %s", extractor.name, type(e).__name__)
         raise HTTPException(502, "Could not read the contract. Try clearer images.")
 
-    log.info("ok via %s in %.1fs over %d page(s)", extractor.name, time.time() - started, len(pages))
+    log.info("ok via %s in %.1fs over %d of %d page(s) (cap=%d)",
+             extractor.name, time.time() - started, len(sent), len(pages), MAX_EXTRACT_PAGES)
+    normalize_to_english(contract)
     analysis = ContractAnalysis(extracted=contract, insights=derive_insights(contract))
     return JSONResponse(analysis.model_dump(mode="json"))
 

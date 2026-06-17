@@ -195,6 +195,7 @@ drop.addEventListener('drop',ev=>{const f=ev.dataTransfer.files[0]; if(f) handle
 async function handleFile(file){
   if(!file) return;
   resetAll(); clearAlert();
+  const res=document.getElementById('result'); res.style.display='none'; res.innerHTML='';
   if(file.type!=='application/pdf' && !file.name.toLowerCase().endsWith('.pdf')){ showAlert('not_pdf'); return; }
   document.getElementById('statusText').textContent='Removing personal data on your device…'; showStatus(true);
   try{
@@ -210,12 +211,27 @@ async function handleFile(file){
   finally{ showStatus(false); }
 }
 
+const WAIT_MSGS=[
+  "Reading your contract…",
+  "Pulling out the dates and amounts…",
+  "Checking the auto-renewal terms…",
+  "Finding penalties and deadlines…",
+  "Putting it together…"
+];
+let waitTimer=null;
+function startWaitMessages(){
+  const el=document.getElementById('statusText');
+  let i=0; el.textContent=WAIT_MSGS[0]; showStatus(true);
+  waitTimer=setInterval(()=>{ i=Math.min(i+1,WAIT_MSGS.length-1); el.textContent=WAIT_MSGS[i]; },3500);
+}
+function stopWaitMessages(){ if(waitTimer){clearInterval(waitTimer);waitTimer=null;} showStatus(false); }
+
 async function confirmSend(){
   if(!redactedBlobs) return;
   clearAlert(); document.getElementById('preview').style.display='none';
-  document.getElementById('statusText').textContent='Reading your contract…'; showStatus(true);
+  startWaitMessages();
   const fd=new FormData();
-  redactedBlobs.forEach((b,i)=>fd.append('files',b,`page-${i+1}.png`));
+  redactedBlobs.forEach((b,i)=>fd.append('files',b,`page-${i+1}.jpg`));
   try{
     const r=await fetch('/api/extract',{method:'POST',body:fd});
     if(!r.ok) throw new Error('server');
@@ -223,7 +239,7 @@ async function confirmSend(){
   }catch(err){
     document.getElementById('preview').style.display='block';
     showAlert(/fetch|networkerror|load failed/i.test(err.message||'')?'unreachable':'server');
-  }finally{ showStatus(false); }
+  }finally{ stopWaitMessages(); }
 }
 
 const v=x=>(x===null||x===undefined||x==='')?null:x;
